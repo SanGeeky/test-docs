@@ -1,10 +1,13 @@
 # Table of contents
 
-* [Welcome!](README.md)
-* [Quick Start](quick-start.md)
+* [Mintacoin](README.md)
 
 ## Reference
 
-* [API Reference](reference/api-reference/README.md)
-  * [Pets](reference/api-reference/pets.md)
-  * [Users](reference/api-reference/users.md)
+* [⚙ API Reference](reference/api-reference/README.md)
+  * [🥁 Basics](reference/api-reference/basics.md)
+  * [👤 Accounts](reference/api-reference/accounts.md)
+  * [👛 Assets](reference/api-reference/assets.md)
+* [🏗 Architecture Reference](reference/architecture-reference/README.md)
+  * [Concepts](reference/architecture-reference/concepts/README.md)
+    * [Customers](reference/architecture-reference/concepts/customers.md)
