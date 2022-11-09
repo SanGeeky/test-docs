@@ -2,7 +2,7 @@
 description: Mintacoin will help you in the creation and management of your assets.
 ---
 
-# 👛 Assets
+# 🪙 Assets
 
 {% hint style="info" %}
 **Definition:** Is the representation of an asset within a blockchain network, which could contain a commercial and economic value; This asset can be exchanged by any other, and it can represent anything like:
@@ -20,7 +20,7 @@ description: Mintacoin will help you in the creation and management of your asse
 
 {% swagger baseUrl="https://sandbox.api.mintacoin.co" method="post" path="/assets" summary="Creates an asset on the given blockchain" %}
 {% swagger-description %}
-
+This endpoint creates an asset in the given blockchain network having the account that is the owner of the address passed in the params as the distributor of the asset.
 {% endswagger-description %}
 
 {% swagger-parameter in="body" name="blockchain" required="false" type="String" %}
@@ -67,6 +67,50 @@ The initial amount of the asset. This supply must be greater than zero
 {% endtab %}
 {% endtabs %}
 {% endswagger-response %}
+
+{% swagger-response status="400: Bad Request" description="Bad request" %}
+{% tabs %}
+{% tab title="Invalid supply" %}
+```json
+{
+  "code": 400,
+  "detail": "The introduced supply format is invalid",
+  "status": "invalid_supply_format"
+}
+```
+{% endtab %}
+
+{% tab title="Wallet not found" %}
+```json
+{
+  "code": 400,
+  "detail": "The introduced address doesn't exist or doesn't have associated the blockchain",
+  "status": "wallet_not_found"
+}
+```
+{% endtab %}
+
+{% tab title="Invalid signature" %}
+```json
+{
+  "code": 400,
+  "detail": "The signature is invalid",
+  "status": "decoding_error"
+}
+```
+{% endtab %}
+
+{% tab title="Invalid asset" %}
+```json
+{
+  "code": 400,
+  "detail": {"code": ["code must be alphanumeric"]},
+  "status": "unprocessable_entity"
+}
+```
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
 {% endswagger %}
 
 <details>
@@ -82,8 +126,6 @@ The initial amount of the asset. This supply must be greater than zero
   "supply": 123.542
 }
 ```
-
-
 
 </details>
 
@@ -153,7 +195,7 @@ curl -X GET \
 
 ## Get asset issuer
 
-{% swagger method="get" path="/assets/:id/issuer" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the address from the asset's issuer" %}
+{% swagger method="get" path="/assets/:id/issuer" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the address from the asset" %}
 {% swagger-description %}
 
 {% endswagger-description %}
@@ -196,7 +238,7 @@ curl -X GET \
 
 ## Get asset holders
 
-{% swagger method="get" path="/assets/:id/accounts" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the address from the asset's issuer" %}
+{% swagger method="get" path="/assets/:id/accounts" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the address from the asset" %}
 {% swagger-description %}
 The resulting accounts are the holders of the requested asset.
 {% endswagger-description %}

@@ -8,7 +8,7 @@
 
 Reach the power of blockchain with just an API integration! 🪄
 
-### <mark style="color:red;">What can you do with Mintacoin?</mark>
+### What can you do with Mintacoin?
 
 Mintacoin will provide endpoints so you can:
 

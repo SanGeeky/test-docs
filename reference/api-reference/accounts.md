@@ -11,23 +11,25 @@ description: >-
 
 {% swagger baseUrl="https://sandbox.api.mintacoin.co" method="post" path="/accounts" summary="Creates an account on Mintacoin and on the given blockchain" %}
 {% swagger-description %}
-This endpoint returns the necessary to manage an account in Mintacoin: 
+This endpoint returns the necessary to manage an account in Mintacoin:
 
 **address**
 
- (Mintacoin public key), 
+(Mintacoin public key),
 
 **signature**
 
- (Mintacoin secret key), and 
+(Mintacoin secret key), and
 
 **seed words**
 
- (to recover the signature).
+(to recover the signature).
 {% endswagger-description %}
 
 {% swagger-parameter in="body" name="blockchain" required="false" type="String" %}
-The blockchain in which the account's first wallet will be created
+The blockchain in which the account's first wallet will be created. Default value: 
+
+`stellar`
 {% endswagger-parameter %}
 
 {% swagger-response status="200" description="Account successfully created" %}
@@ -88,8 +90,6 @@ The blockchain in which the account's first wallet will be created
 }
 ```
 
-
-
 </details>
 
 <details>
@@ -132,7 +132,7 @@ Account's seed words
 Account's address
 {% endswagger-parameter %}
 
-{% swagger-response status="200" description="Account's signature sent" %}
+{% swagger-response status="200" description="Account" %}
 ```json
 {
   "data": {
@@ -151,12 +151,58 @@ Account's address
 {% endtabs %}
 {% endswagger-response %}
 
-{% swagger-response status="400: Bad Request" description="" %}
-```javascript
+{% swagger-response status="400: Bad Request" description="Bad request" %}
+{% tabs %}
+{% tab title="Decoding error" %}
+<pre class="language-javascript"><code class="lang-javascript">{
+<strong>  "code": 400,
+</strong>  "detail": "The introduced address is invalid",
+  "status": "decoding_error"
+}</code></pre>
+{% endtab %}
+
+{% tab title="Invalid address" %}
+<pre class="language-json"><code class="lang-json"><strong>{
+</strong>  "code": 400,
+  "detail": "The address is invalid",
+  "status": "invalid_address"
+}</code></pre>
+{% endtab %}
+
+{% tab title="Invalid seed words" %}
+```json
 {
-    // Response
+  "code": 400,
+  "detail": "The seed words are invalid",
+  "status": "invalid_seed_words"
 }
 ```
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
+
+{% swagger-response status="401: Unauthorized" description="Permission denied" %}
+{% tabs %}
+{% tab title="Invalid Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Invalid authorization Bearer token",
+  "status": "unauthorized"
+}
+```
+{% endtab %}
+
+{% tab title="Missing Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Missing authorization Bearer token",
+  "status": "unauthorized"
+}
+```
+{% endtab %}
+{% endtabs %}
 {% endswagger-response %}
 {% endswagger %}
 
@@ -169,8 +215,6 @@ Account's address
   "seed_words": "movie enrich merit census grid twice praise return glass wagon yard faint"
 }
 ```
-
-
 
 </details>
 
@@ -203,7 +247,7 @@ Account's address
 {% endswagger-parameter %}
 
 {% swagger-parameter in="path" name="asset_id" required="true" type="String" %}
-Asset’s identifier 
+Asset’s identifier
 {% endswagger-parameter %}
 
 {% swagger-response status="200" description="Asset trustline created" %}
@@ -228,15 +272,75 @@ Asset’s identifier
 {% endtab %}
 {% endtabs %}
 {% endswagger-response %}
+
+{% swagger-response status="400: Bad Request" description="Bad request" %}
+{% tabs %}
+{% tab title="Invalid address" %}
+```json
+{
+  "code": 400,
+  "detail": "The introduced address is invalid",
+  "status": "decoding_error"
+}
+```
+{% endtab %}
+
+{% tab title="Wallet not found" %}
+```json
+{
+  "code": 400,
+  "detail": "The introduced address doesn't exist or doesn't have associated the blockchain",
+  "status": "wallet_not_found"
+}
+```
+{% endtab %}
+
+{% tab title="Asset not found" %}
+```json
+{
+  "code": 400,
+  "detail": "The introduced asset doesn't exist",
+  "status": "asset_not_found"
+}
+```
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
+
+{% swagger-response status="401: Unauthorized" description="Permission denied" %}
+{% tabs %}
+{% tab title="Invalid Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Invalid authorization Bearer token",
+  "status": "unauthorized"
+}
+```
+{% endtab %}
+
+{% tab title="Missing Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Missing authorization Bearer token",
+  "status": "unauthorized"
+}
+```
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
 {% endswagger %}
 
 <details>
 
 <summary>Parameters Example</summary>
 
-<pre class="language-json"><code class="lang-json"><strong>{
-</strong>  "signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ"
-}</code></pre>
+```json
+{
+  "signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ"
+}
+```
 
 </details>
 
@@ -255,9 +359,9 @@ curl -X POST \
 
 ## Get assets balances
 
-{% swagger method="get" path="/accounts/:address/assets" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the assets information held by a Mintacoin ac>count and their balances" %}
+{% swagger method="get" path="/accounts/:address/assets" baseUrl="https://sandbox.api.mintacoin.co" summary="Retrieve the assets information held by a Mintacoin account and their balances" %}
 {% swagger-description %}
-
+The resultant response is the list of balances for each asset held by the account that is the owner of the address passed in the path.
 {% endswagger-description %}
 
 {% swagger-parameter in="path" type="String" name="address" required="true" %}
@@ -296,6 +400,44 @@ Account's address
 | `balance`    | String  | The current balance of the asset on the user's account.                                                                                  |
 | `blockchain` | String  | The name of the blockchain to which the asset belongs.                                                                                   |
 | `minter`     | Boolean | <p><code>true</code> if the user account is the issuer of the asset.<br><code>false</code> if the user account only holds the asset.</p> |
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
+
+{% swagger-response status="400: Bad Request" description="Bad request" %}
+{% tabs %}
+{% tab title="Invalid address" %}
+```json
+{
+  "code": 400,
+  "detail": "The address is invalid",
+  "status": "invalid_address"
+}
+```
+{% endtab %}
+{% endtabs %}
+{% endswagger-response %}
+
+{% swagger-response status="401: Unauthorized" description="Permission denied" %}
+{% tabs %}
+{% tab title="Invalid Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Invalid authorization Bearer token",
+  "status": "unauthorized"
+}
+```
+{% endtab %}
+
+{% tab title="Missing Token" %}
+```json
+{
+  "code": 401,
+  "detail": "Missing authorization Bearer token",
+  "status": "unauthorized"
+}
+```
 {% endtab %}
 {% endtabs %}
 {% endswagger-response %}
